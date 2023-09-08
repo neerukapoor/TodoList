@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+</head>
+<body onload="getFunc()">
+    <div>
+        TODO Title
+        <input type="text" id="title"></input>
+        TODO Description
+        <input type="text" id="description"></input>
+        <button onclick="postFunction()">Send Todo</button>
+        <div id="mainArea"></div>
+    </div>
+</body>
+<script>
+
+
+    function postFunction() {
+
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        console.log(title);
+        console.log(description);
+
+        const data = {
+            title: title,
+            description: description
+        }
+
+        fetch("http://localhost:3200/todo", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(resp => resp.json())
+        .then(newTodo => {
+            console.log(newTodo);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
+        getFunc();
+    }
+
+    function getFunc() {
+        fetch("http://localhost:3200/todo", {
+            method: "GET"
+        }).then((resp)=>{
+            resp.json().then((data)=>{
+                var parentElement = document.getElementById("mainArea");
+                console.log(data);
+                for(let i=0;i<data.length;i++) {
+                    var childElement = document.createElement("div");
+                    var grandChildElementOne = document.createElement("span");
+                    grandChildElementOne.innerHTML = data[i].title;
+
+                    var grandChildElementTwo = document.createElement("span");
+                    grandChildElementTwo.innerHTML = data[i].description ;
+
+                    var grandChildElementThree = document.createElement("button");
+                    grandChildElementThree.innerHTML = "Delete";
+
+                    childElement.append(grandChildElementOne);
+                    childElement.append(grandChildElementTwo);
+                    childElement.append(grandChildElementThree);
+
+                    parentElement.appendChild(childElement);
+                }
+                const divElement = document.createElement('div');
+
+            })
+        })
+    }
+</script>
+</html>
