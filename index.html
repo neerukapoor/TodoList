@@ -39,11 +39,25 @@
         }).then(resp => resp.json())
         .then(newTodo => {
             console.log(newTodo);
+            var parentElement = document.getElementById("mainArea");
+            var childElement = document.createElement("div");
+            var grandChildElementOne = document.createElement("span");
+            grandChildElementOne.innerHTML = newTodo.title;
+
+            var grandChildElementTwo = document.createElement("span");
+            grandChildElementTwo.innerHTML = newTodo.description ;
+
+            var grandChildElementThree = document.createElement("button");
+            grandChildElementThree.innerHTML = "Delete";
+
+            childElement.append(grandChildElementOne);
+            childElement.append(grandChildElementTwo);
+            childElement.append(grandChildElementThree);
+            parentElement.appendChild(childElement);
         })
         .catch(error => {
             console.error('Error:', error);
         })
-        getFunc();
     }
 
     function getFunc() {
@@ -63,6 +77,22 @@
 
                     var grandChildElementThree = document.createElement("button");
                     grandChildElementThree.innerHTML = "Delete";
+
+                    grandChildElementThree.addEventListener('click', () => {
+                        fetch(`http://localhost:3200/todo/${data[i].id}`, {
+                            method: "DELETE"
+                        }).then((resp) => {
+                            if(resp.status===200) {
+                                parentElement.removeChild(childElement);
+                                location.reload();
+                            }
+                            else if(resp.status===404) {
+                                console.error("Todo Not Found");
+                            } else {
+                                console.error("Error deleting todo")
+                            }
+                        })
+                    })
 
                     childElement.append(grandChildElementOne);
                     childElement.append(grandChildElementTwo);
